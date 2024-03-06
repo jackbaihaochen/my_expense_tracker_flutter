@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_expense_tracker/models/expense_model.dart';
+import 'package:my_expense_tracker/providers/expense_list_provider.dart';
 
 final db = FirebaseFirestore.instance;
 final auth = FirebaseAuth.instance;
 
-class AddScreen extends StatefulWidget {
+class AddScreen extends ConsumerStatefulWidget {
   const AddScreen({
     super.key,
   });
@@ -14,12 +18,14 @@ class AddScreen extends StatefulWidget {
   AddScreenState createState() => AddScreenState();
 }
 
-class AddScreenState extends State<AddScreen> {
+class AddScreenState extends ConsumerState<AddScreen> {
   final _formKey = GlobalKey<FormState>();
   String _title = '';
   int _amount = 0;
 
   void onAddExpense() {
+    final addExpense = ref.read(expenseListProvider.notifier).addExpense;
+
     // Validate the form
     if (_formKey.currentState!.validate()) {
       // Get the current user
@@ -31,27 +37,22 @@ class AddScreenState extends State<AddScreen> {
       final userUid = user!.uid;
 
       // Add the expense to the database
-      final expense = <String, dynamic>{
-        'title': _title,
-        'amount': _amount,
-        'date': DateTime.now(),
-      };
-      db.collection(userUid).add(expense).then((DocumentReference doc) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Expense added successfully'),
-          ),
-        );
-        Navigator.of(context).pop();
-      }).catchError((error) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to add expense: $error'),
-          ),
-        );
-      });
+      final now = DateTime.now();
+      final expense = ExpenseModel(
+        id: "",
+        title: _title,
+        amount: _amount,
+        date: now,
+      );
+      final isSuccessful = addExpense(
+        context: context,
+        userUid: userUid,
+        expense: expense,
+        month: DateFormat('yyyy/MM').format(now),
+      );
+      if (isSuccessful) {
+        Navigator.pop(context);
+      }
     }
   }
 

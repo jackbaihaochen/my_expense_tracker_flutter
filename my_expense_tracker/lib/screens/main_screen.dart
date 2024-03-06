@@ -50,7 +50,7 @@ class _MainScreenState extends State<MainScreen> {
       initialIndex: monthCount - 1,
       child: Scaffold(
         appBar: AppBar(
-          // title: const Text('My Expense Tracker'),
+          title: const Text('Expense Tracker'),
           centerTitle: true,
           actions: [
             TextButton.icon(
