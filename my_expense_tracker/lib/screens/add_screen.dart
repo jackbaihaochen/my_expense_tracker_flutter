@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_expense_tracker/models/expense_model.dart';
 import 'package:my_expense_tracker/providers/expense_list_provider.dart';
+import 'package:my_expense_tracker/utils.dart';
 
 final db = FirebaseFirestore.instance;
 final auth = FirebaseAuth.instance;
@@ -48,7 +48,7 @@ class AddScreenState extends ConsumerState<AddScreen> {
         context: context,
         userUid: userUid,
         expense: expense,
-        month: DateFormat('yyyy/MM').format(now),
+        month: monthFormatter.format(now),
       );
       if (isSuccessful) {
         Navigator.pop(context);

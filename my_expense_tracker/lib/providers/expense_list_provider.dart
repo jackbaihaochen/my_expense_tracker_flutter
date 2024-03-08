@@ -103,12 +103,17 @@ class ExpenseListNotifier
           content: Text('Failed to add expense: $error'),
         ),
       );
+      return false;
     });
     return false;
   }
 
   // Return true if successful, false if not
-  bool removeExpense(String month, String id, BuildContext context) {
+  bool removeExpense({
+    required BuildContext context,
+    required String month,
+    required String id,
+  }) {
     final user = auth.currentUser;
     if (user == null) {
       // Log the user out
@@ -140,6 +145,7 @@ class ExpenseListNotifier
           content: Text('Failed to remove expense: $error'),
         ),
       );
+      return false;
     });
     return false;
   }

@@ -1,15 +1,9 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:my_expense_tracker/models/expense_model.dart';
 import 'package:my_expense_tracker/providers/expense_list_provider.dart';
-
-// final db = FirebaseFirestore.instance;
-// final auth = FirebaseAuth.instance;
-final dateFormatter = DateFormat('yyyy/MM/dd HH:mm:ss');
-final currencyFormatter = NumberFormat('#,###', 'ja_JP');
+import 'package:my_expense_tracker/utils.dart';
+import 'package:my_expense_tracker/widgets/main_expense_item.dart';
 
 class MainExpenseList extends ConsumerStatefulWidget {
   const MainExpenseList({
@@ -28,7 +22,6 @@ class _MainExpenseListState extends ConsumerState<MainExpenseList> {
   void initState() {
     super.initState();
     ref.read(expenseListProvider.notifier).getData(widget.month);
-    print('hi');
   }
 
   @override
@@ -37,7 +30,6 @@ class _MainExpenseListState extends ConsumerState<MainExpenseList> {
         ref.watch(expenseListProvider.notifier).getExpenseSum(widget.month);
     List<ExpenseModel> expenseRecords =
         ref.watch(expenseListProvider)[widget.month] ?? [];
-    print('expenseRecords: $expenseRecords');
 
     return Column(
       children: [
@@ -54,24 +46,8 @@ class _MainExpenseListState extends ConsumerState<MainExpenseList> {
                 itemCount: expenseRecords.length,
                 itemBuilder: (context, index) {
                   ExpenseModel expenseRecord = expenseRecords[index];
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ListTile(
-                      title: Text(
-                        expenseRecord.title,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                      subtitle: Text(
-                        // Date time format as YYYY/MM/DD HH:MM:SS
-                        dateFormatter.format(
-                          expenseRecord.date,
-                        ),
-                      ),
-                      trailing: Text(
-                        '${currencyFormatter.format(expenseRecord.amount)}.00円',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ),
+                  return MainExpenseItem(
+                    expenseRecord: expenseRecord,
                   );
                 },
               ),

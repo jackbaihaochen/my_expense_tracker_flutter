@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:my_expense_tracker/screens/add_screen.dart';
+import 'package:my_expense_tracker/utils.dart';
 import 'package:my_expense_tracker/widgets/main_drawer.dart';
 import 'package:my_expense_tracker/widgets/main_date_tab.dart';
 
@@ -34,7 +34,7 @@ class _MainScreenState extends State<MainScreen> {
         now.year,
         now.month - i,
       );
-      String formattedMonth = DateFormat('yyyy/MM').format(pastMonth);
+      String formattedMonth = monthFormatter.format(pastMonth);
       monthsList.add(formattedMonth);
     }
 
