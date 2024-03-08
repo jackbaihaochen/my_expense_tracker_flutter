@@ -41,6 +41,7 @@ class _MainExpenseListState extends ConsumerState<MainExpenseList> {
         Expanded(
           child: Center(
             child: Card(
+              clipBehavior: Clip.hardEdge,
               margin: const EdgeInsets.all(16.0),
               child: ListView.builder(
                 itemCount: expenseRecords.length,

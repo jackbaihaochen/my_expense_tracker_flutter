@@ -65,24 +65,32 @@ class ExpenseListNotifier
   }
 
   // Return true if successful, false if not
-  bool addExpense({
+  Future<bool> addExpense({
     required BuildContext context,
     required String month,
     required ExpenseModel expense,
     required String userUid,
-  }) {
+  }) async {
     final expenseData = <String, dynamic>{
       'title': expense.title,
       'amount': expense.amount,
       'date': expense.date,
     };
     // Delete in firestore
-    db.collection(userUid).add(expenseData).then((DocumentReference doc) {
+    return await db
+        .collection(userUid)
+        .add(expenseData)
+        .then((DocumentReference doc) {
       // If successful, add the expense to the state
+      final expenseWithId = ExpenseModel(
+          title: expense.title,
+          amount: expense.amount,
+          date: expense.date,
+          id: doc.id);
       if (state.containsKey(month)) {
-        state[month] = [expense, ...state[month]!];
+        state[month] = [expenseWithId, ...state[month]!];
       } else {
-        state[month] = [expense];
+        state[month] = [expenseWithId];
       }
       state = {
         ...state,
@@ -105,15 +113,14 @@ class ExpenseListNotifier
       );
       return false;
     });
-    return false;
   }
 
   // Return true if successful, false if not
-  bool removeExpense({
+  Future<bool> removeExpense({
     required BuildContext context,
     required String month,
     required String id,
-  }) {
+  }) async {
     final user = auth.currentUser;
     if (user == null) {
       // Log the user out
@@ -121,7 +128,7 @@ class ExpenseListNotifier
     }
     final userUid = user!.uid;
     // Delete in firestore
-    db.collection(userUid).doc(id).delete().then((doc) {
+    return await db.collection(userUid).doc(id).delete().then((doc) {
       // If successful, remove the expense from the state
       if (state.containsKey(month)) {
         state[month]!.removeWhere((element) => element.id == id);
@@ -147,7 +154,6 @@ class ExpenseListNotifier
       );
       return false;
     });
-    return false;
   }
 
   int getExpenseCount(String month) {

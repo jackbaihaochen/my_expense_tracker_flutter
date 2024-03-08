@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:my_expense_tracker/models/expense_model.dart';
 import 'package:my_expense_tracker/providers/expense_list_provider.dart';
 import 'package:my_expense_tracker/utils.dart';
@@ -17,8 +18,6 @@ class MainExpenseItem extends ConsumerStatefulWidget {
 }
 
 class _MainExpenseItemState extends ConsumerState<MainExpenseItem> {
-  bool _isDeleting = false;
-
   void deleteExpenseRecord() {
     ref.read(expenseListProvider.notifier).removeExpense(
           id: widget.expenseRecord.id,
@@ -29,44 +28,44 @@ class _MainExpenseItemState extends ConsumerState<MainExpenseItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
       padding: const EdgeInsets.all(8.0),
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: Container(
-              color: _isDeleting ? Colors.red : Colors.transparent,
+      child: Slidable(
+        endActionPane: ActionPane(
+          extentRatio: 0.3,
+          motion: const ScrollMotion(),
+          children: [
+            SlidableAction(
+              borderRadius: const BorderRadius.all(
+                Radius.circular(8.0),
+              ),
+              autoClose: true,
+              onPressed: (context) {
+                deleteExpenseRecord();
+              },
+              backgroundColor: const Color(0xFFFE4A49),
+              foregroundColor: Colors.white,
+              icon: Icons.delete,
+              label: 'Delete',
+            ),
+          ],
+        ),
+        child: ListTile(
+          title: Text(
+            widget.expenseRecord.title,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          subtitle: Text(
+            // Date time format as YYYY/MM/DD HH:MM:SS
+            dateFormatter.format(
+              widget.expenseRecord.date,
             ),
           ),
-          Dismissible(
-            key: Key(widget.expenseRecord.id),
-            onDismissed: (direction) {
-              setState(() {
-                _isDeleting = true;
-              });
-              deleteExpenseRecord();
-            },
-            background: Container(
-              color: Colors.transparent,
-            ),
-            child: ListTile(
-              title: Text(
-                widget.expenseRecord.title,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              subtitle: Text(
-                // Date time format as YYYY/MM/DD HH:MM:SS
-                dateFormatter.format(
-                  widget.expenseRecord.date,
-                ),
-              ),
-              trailing: Text(
-                '${currencyFormatter.format(widget.expenseRecord.amount)}.00円',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ),
-          )
-        ],
+          trailing: Text(
+            '${currencyFormatter.format(widget.expenseRecord.amount)}.00円',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        ),
       ),
     );
   }

@@ -23,7 +23,7 @@ class AddScreenState extends ConsumerState<AddScreen> {
   String _title = '';
   int _amount = 0;
 
-  void onAddExpense() {
+  void onAddExpense() async {
     final addExpense = ref.read(expenseListProvider.notifier).addExpense;
 
     // Validate the form
@@ -44,13 +44,16 @@ class AddScreenState extends ConsumerState<AddScreen> {
         amount: _amount,
         date: now,
       );
-      final isSuccessful = addExpense(
+      final isSuccessful = await addExpense(
         context: context,
         userUid: userUid,
         expense: expense,
         month: monthFormatter.format(now),
       );
       if (isSuccessful) {
+        if (!context.mounted) {
+          return;
+        }
         Navigator.pop(context);
       }
     }
