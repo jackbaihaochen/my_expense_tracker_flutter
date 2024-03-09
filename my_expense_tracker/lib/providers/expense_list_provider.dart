@@ -3,24 +3,29 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_expense_tracker/models/expense_model.dart';
+import 'package:my_expense_tracker/utils.dart';
 
 final auth = FirebaseAuth.instance;
 final db = FirebaseFirestore.instance;
+const String expensesCollectionName = 'expenses_collection';
+const String expensesDocumentName = 'expenses';
+CollectionReference<Map<String, dynamic>> getExpensesCollection() {
+  // Get user's uid
+  final userUid = getUserUid();
+  // Get the expenses collection from the firestore by the user's uid
+  return db
+      .collection(userUid)
+      .doc(expensesDocumentName)
+      .collection(expensesCollectionName);
+}
 
 class ExpenseListNotifier
     extends StateNotifier<Map<String, List<ExpenseModel>>> {
   ExpenseListNotifier() : super({});
 
+  // Get the expenses from the firestore by the user's uid and selected month, order by date from the newest
   void getData(String selectedMonth) async {
-    // Get current user
-    final user = auth.currentUser;
-    if (user == null) {
-      // Log the user out
-      auth.signOut();
-    }
-    // GEt the user's uid
-    final userUid = user!.uid;
-    // Get the expenses from the firestore by the user's uid and selected month, order by date from the newest
+    // Get the start and end of the selected month
     final year = selectedMonth.split('/')[0];
     final month = selectedMonth.split('/')[1];
     final currentMonthStart = DateTime.parse('$year-$month-01');
@@ -30,8 +35,9 @@ class ExpenseListNotifier
     ).subtract(
       const Duration(microseconds: 1),
     );
-    final data = await db
-        .collection(userUid)
+    // Get data
+    final collection = getExpensesCollection();
+    final data = await collection
         .where(
           'date',
           isGreaterThanOrEqualTo: currentMonthStart,
@@ -77,16 +83,15 @@ class ExpenseListNotifier
       'date': expense.date,
     };
     // Delete in firestore
-    return await db
-        .collection(userUid)
-        .add(expenseData)
-        .then((DocumentReference doc) {
+    final collection = getExpensesCollection();
+    return await collection.add(expenseData).then((DocumentReference doc) {
       // If successful, add the expense to the state
       final expenseWithId = ExpenseModel(
-          title: expense.title,
-          amount: expense.amount,
-          date: expense.date,
-          id: doc.id);
+        title: expense.title,
+        amount: expense.amount,
+        date: expense.date,
+        id: doc.id,
+      );
       if (state.containsKey(month)) {
         state[month] = [expenseWithId, ...state[month]!];
       } else {
@@ -121,14 +126,9 @@ class ExpenseListNotifier
     required String month,
     required String id,
   }) async {
-    final user = auth.currentUser;
-    if (user == null) {
-      // Log the user out
-      auth.signOut();
-    }
-    final userUid = user!.uid;
+    final collection = getExpensesCollection();
     // Delete in firestore
-    return await db.collection(userUid).doc(id).delete().then((doc) {
+    return await collection.doc(id).delete().then((doc) {
       // If successful, remove the expense from the state
       if (state.containsKey(month)) {
         state[month]!.removeWhere((element) => element.id == id);

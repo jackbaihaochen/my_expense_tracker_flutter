@@ -58,7 +58,7 @@ class _MainExpenseItemState extends ConsumerState<MainExpenseItem> {
           subtitle: Text(
             // Date time format as YYYY/MM/DD HH:MM:SS
             dateFormatter.format(
-              widget.expenseRecord.date,
+              widget.expenseRecord.date.toLocal(),
             ),
           ),
           trailing: Text(

@@ -28,13 +28,8 @@ class AddScreenState extends ConsumerState<AddScreen> {
 
     // Validate the form
     if (_formKey.currentState!.validate()) {
-      // Get the current user
-      final user = auth.currentUser;
-      if (user == null) {
-        // Log the user out
-        auth.signOut();
-      }
-      final userUid = user!.uid;
+      // Get user's uid
+      final userUid = getUserUid();
 
       // Add the expense to the database
       final now = DateTime.now();
