@@ -51,13 +51,22 @@ class _MainExpenseItemState extends ConsumerState<MainExpenseItem> {
           ],
         ),
         child: ListTile(
-          title: Text(
-            widget.expenseRecord.title,
-            style: Theme.of(context).textTheme.bodyLarge,
+          title: Row(
+            children: [
+              // Icon(
+              //   widget.expenseRecord.category.image,
+              //   color: Theme.of(context).primaryColor,
+              // ),
+              // const SizedBox(width: 8.0),
+              Text(
+                widget.expenseRecord.title,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ],
           ),
           subtitle: Text(
             // Date time format as YYYY/MM/DD HH:MM:SS
-            dateFormatter.format(
+            timeFormatter.format(
               widget.expenseRecord.date.toLocal(),
             ),
           ),

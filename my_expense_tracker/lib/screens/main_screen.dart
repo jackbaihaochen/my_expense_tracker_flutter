@@ -1,29 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_expense_tracker/providers/category_list_provider.dart';
 import 'package:my_expense_tracker/screens/add_screen.dart';
 import 'package:my_expense_tracker/utils.dart';
 import 'package:my_expense_tracker/widgets/main_drawer.dart';
 import 'package:my_expense_tracker/widgets/main_date_tab.dart';
 
-class MainScreen extends StatefulWidget {
+class MainScreen extends ConsumerWidget {
   const MainScreen({super.key});
 
-  @override
-  State<MainScreen> createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
   // Basic setup for the tab bar
   final monthCount = 12;
-
-  void goToAddExpenseScreen() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) {
-          return const AddScreen();
-        },
-      ),
-    );
-  }
 
   List<String> getPastMonths() {
     List<String> monthsList = [];
@@ -42,8 +29,20 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     List<String> pastMonths = getPastMonths();
+
+    void goToAddExpenseScreen() {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+            return const AddScreen();
+          },
+        ),
+      );
+    }
+
+    ref.read(categoryListProvider.notifier).getCategories();
 
     return DefaultTabController(
       length: monthCount,

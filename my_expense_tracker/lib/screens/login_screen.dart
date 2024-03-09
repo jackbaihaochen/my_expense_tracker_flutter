@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:my_expense_tracker/utils.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -26,12 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (!context.mounted) {
           return;
         }
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.message ?? 'Authentication Failed'),
-          ),
-        );
+        showSnackBar(context, e.message ?? 'Authentication Failed');
       }
     }
   }
@@ -46,22 +42,12 @@ class _LoginScreenState extends State<LoginScreen> {
         if (!context.mounted) {
           return;
         }
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('User Created Successfully'),
-          ),
-        );
+        showSnackBar(context, 'User Created Successfully');
       } on FirebaseAuthException catch (e) {
         if (!context.mounted) {
           return;
         }
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.message ?? 'Create User Failed'),
-          ),
-        );
+        showSnackBar(context, e.message ?? 'Create User Failed');
       }
     }
   }
