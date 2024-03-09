@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:my_expense_tracker/models/expense_model.dart';
 import 'package:my_expense_tracker/providers/expense_list_provider.dart';
+import 'package:my_expense_tracker/screens/upsert_expense_screen.dart';
 import 'package:my_expense_tracker/utils.dart';
 
 class MainExpenseItem extends ConsumerStatefulWidget {
@@ -26,15 +27,40 @@ class _MainExpenseItemState extends ConsumerState<MainExpenseItem> {
         );
   }
 
+  void goToEditExpenseScreen() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return UpsertExpenseScreen(
+            expenseRecord: widget.expenseRecord,
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(8.0),
       child: Slidable(
         endActionPane: ActionPane(
-          extentRatio: 0.3,
+          extentRatio: 0.6,
           motion: const ScrollMotion(),
           children: [
+            SlidableAction(
+              borderRadius: const BorderRadius.all(
+                Radius.circular(8.0),
+              ),
+              autoClose: true,
+              onPressed: (context) {
+                goToEditExpenseScreen();
+              },
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+              icon: Icons.edit,
+              label: 'Edit',
+            ),
             SlidableAction(
               borderRadius: const BorderRadius.all(
                 Radius.circular(8.0),

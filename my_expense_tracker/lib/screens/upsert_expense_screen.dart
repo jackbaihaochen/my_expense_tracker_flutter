@@ -11,17 +11,20 @@ import 'package:my_expense_tracker/utils.dart';
 final db = FirebaseFirestore.instance;
 final auth = FirebaseAuth.instance;
 
-class AddScreen extends ConsumerStatefulWidget {
-  const AddScreen({
+class UpsertExpenseScreen extends ConsumerStatefulWidget {
+  const UpsertExpenseScreen({
     super.key,
+    this.expenseRecord,
   });
+  final ExpenseModel? expenseRecord;
 
   @override
-  AddScreenState createState() => AddScreenState();
+  UpsertExpenseScreenState createState() => UpsertExpenseScreenState();
 }
 
-class AddScreenState extends ConsumerState<AddScreen> {
+class UpsertExpenseScreenState extends ConsumerState<UpsertExpenseScreen> {
   final _formKey = GlobalKey<FormState>();
+  String _id = '';
   String _title = '';
   int _amount = 0;
   DateTime _pickedDate = DateTime.now();
@@ -55,7 +58,7 @@ class AddScreenState extends ConsumerState<AddScreen> {
       // Add the expense to the database
       final now = DateTime.now();
       final expense = ExpenseModel(
-        id: uuid.v4(),
+        id: _id == '' ? uuid.v4() : _id,
         title: _title,
         amount: _amount,
         category: _selectedCategory,
@@ -74,6 +77,19 @@ class AddScreenState extends ConsumerState<AddScreen> {
         }
         Navigator.pop(context);
       }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.expenseRecord != null) {
+      final expense = widget.expenseRecord!;
+      _title = expense.title;
+      _amount = expense.amount;
+      _pickedDate = expense.date;
+      _selectedCategory = expense.category;
+      _id = expense.id;
     }
   }
 
@@ -109,10 +125,12 @@ class AddScreenState extends ConsumerState<AddScreen> {
                   }
                   return null;
                 },
+                initialValue: _title,
               ),
               // Price
               const SizedBox(height: 16.0),
               TextFormField(
+                initialValue: _amount.toString(),
                 decoration: const InputDecoration(
                   labelText: 'Price（円）',
                 ),
@@ -140,11 +158,11 @@ class AddScreenState extends ConsumerState<AddScreen> {
                   ),
                   const SizedBox(width: 16.0),
                   DropdownButton(
-                    value: _selectedCategory,
+                    value: _selectedCategory.name,
                     items: [
                       for (var category in categories)
                         DropdownMenuItem(
-                          value: category,
+                          value: category.name,
                           child: Row(
                             children: [
                               Icon(
@@ -157,12 +175,13 @@ class AddScreenState extends ConsumerState<AddScreen> {
                           ),
                         ),
                     ],
-                    onChanged: (value) {
-                      if (value == null) {
+                    onChanged: (name) {
+                      if (name == null) {
                         return;
                       }
                       setState(() {
-                        _selectedCategory = value;
+                        _selectedCategory = categories
+                            .firstWhere((element) => element.name == name);
                       });
                     },
                   ),

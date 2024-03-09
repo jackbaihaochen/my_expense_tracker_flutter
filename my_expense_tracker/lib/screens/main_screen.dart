@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_expense_tracker/providers/category_list_provider.dart';
-import 'package:my_expense_tracker/screens/add_screen.dart';
+import 'package:my_expense_tracker/screens/upsert_expense_screen.dart';
 import 'package:my_expense_tracker/utils.dart';
 import 'package:my_expense_tracker/widgets/main_drawer.dart';
 import 'package:my_expense_tracker/widgets/main_date_tab.dart';
@@ -36,7 +36,7 @@ class MainScreen extends ConsumerWidget {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) {
-            return const AddScreen();
+            return const UpsertExpenseScreen();
           },
         ),
       );

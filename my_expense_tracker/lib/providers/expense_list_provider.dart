@@ -2,9 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:my_expense_tracker/models/category_model.dart';
 import 'package:my_expense_tracker/models/expense_model.dart';
-import 'package:my_expense_tracker/providers/category_list_provider.dart';
 import 'package:my_expense_tracker/utils.dart';
 
 final auth = FirebaseAuth.instance;
@@ -42,8 +40,13 @@ class ExpenseListNotifier
         .doc(expense.id)
         .set(expense)
         .then((doc) {
-      // If successful, add the expense to the state
+      // If successful, update the state
       if (state.containsKey(month)) {
+        if (state[month]!.isNotEmpty &&
+            state[month]!.any((e) => e.id == expense.id)) {
+          // If the expense is already in the state, remove it first
+          state[month]?.removeWhere((element) => element.id == expense.id);
+        }
         state[month] = [expense, ...state[month]!];
       } else {
         state[month] = [expense];
