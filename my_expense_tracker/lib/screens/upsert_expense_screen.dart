@@ -26,7 +26,7 @@ class UpsertExpenseScreenState extends ConsumerState<UpsertExpenseScreen> {
   final _formKey = GlobalKey<FormState>();
   String _id = '';
   String _title = '';
-  int _amount = 0;
+  String _amount = '';
   DateTime _pickedDate = DateTime.now();
   CategoryModel _selectedCategory = othersCategory;
 
@@ -60,7 +60,7 @@ class UpsertExpenseScreenState extends ConsumerState<UpsertExpenseScreen> {
       final expense = ExpenseModel(
         id: _id == '' ? uuid.v4() : _id,
         title: _title,
-        amount: _amount,
+        amount: int.parse(_amount),
         category: _selectedCategory,
         date: _pickedDate,
         updatedAt: now,
@@ -86,7 +86,7 @@ class UpsertExpenseScreenState extends ConsumerState<UpsertExpenseScreen> {
     if (widget.expenseRecord != null) {
       final expense = widget.expenseRecord!;
       _title = expense.title;
-      _amount = expense.amount;
+      _amount = '${expense.amount}';
       _pickedDate = expense.date;
       _selectedCategory = expense.category;
       _id = expense.id;
@@ -137,7 +137,7 @@ class UpsertExpenseScreenState extends ConsumerState<UpsertExpenseScreen> {
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
                   setState(() {
-                    _amount = int.parse(value);
+                    _amount = value;
                   });
                 },
                 validator: (value) {

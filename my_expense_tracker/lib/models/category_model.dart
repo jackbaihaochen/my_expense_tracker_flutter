@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:my_expense_tracker/utils.dart';
 
 class CategoryModel {
   final String name;
@@ -18,14 +17,18 @@ class CategoryModel {
     final data = snapshot.data();
     return CategoryModel(
       name: data?['name'],
-      image: codePointToIcon(data?['image']),
+      image: defaultCategories
+          .firstWhere((category) => category.name == data?['name'])
+          .image,
     );
   }
 
   factory CategoryModel.fromMap(Map<String, dynamic> data) {
     return CategoryModel(
       name: data['name'],
-      image: codePointToIcon(data['image']),
+      image: defaultCategories
+          .firstWhere((category) => category.name == data['name'])
+          .image,
     );
   }
 

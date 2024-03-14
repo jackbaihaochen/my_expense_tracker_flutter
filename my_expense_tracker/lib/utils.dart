@@ -27,11 +27,6 @@ String getUserUid() {
   return userUid;
 }
 
-// Icons
-IconData codePointToIcon(int codePoint) {
-  return IconData(codePoint, fontFamily: 'MaterialIcons');
-}
-
 // Show SnackBar
 void showSnackBar(BuildContext context, String message) {
   ScaffoldMessenger.of(context).clearSnackBars();
